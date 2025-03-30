@@ -7,6 +7,7 @@ import com.Bookstore_Application.Bookstore_Application.Service.BookEntryService;
 import com.Bookstore_Application.Bookstore_Application.Service.UserService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -27,13 +28,31 @@ public class BookEntryController {
     @Autowired
     private UserService userService;
 
+//    @GetMapping("/getAllBooks")
+//    public ResponseEntity<?>getAllBooks(){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String email = authentication.getName();
+//        System.out.println(email);
+//        List<Books>books=bookEntryService.getAllBooks();
+//        return new ResponseEntity<>(books, HttpStatus.OK);
+//    }
+
     @GetMapping("/getAllBooks")
-    public ResponseEntity<?>getAllBooks(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        System.out.println(email);
-        List<Books>books=bookEntryService.getAllBooks();
-        return new ResponseEntity<>(books, HttpStatus.OK);
+    public ResponseEntity<?> getAllBooks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "rating") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+            System.out.println(email);
+            Page<Books> books = bookEntryService.getAllBooks(page, size, sortBy, sortDir);
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
     }
 
     @PostMapping("/createBook")
@@ -77,6 +96,7 @@ public class BookEntryController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
     @GetMapping("/searchByRating")
     public ResponseEntity<?> searchBooksByRating(@RequestParam double rating, @RequestParam String condition) {
         try {
@@ -99,7 +119,6 @@ public class BookEntryController {
 //            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 //        }
 //    }
-
 
     @PutMapping("/updateBook/bookId/{bookId}")
     public ResponseEntity<?> updateBook(@PathVariable ObjectId bookId, @RequestBody Books newBook) {

@@ -5,6 +5,10 @@ import com.Bookstore_Application.Bookstore_Application.Entity.User;
 import com.Bookstore_Application.Bookstore_Application.Repository.BooksRepsitory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +24,10 @@ public class BookEntryService {
     @Autowired
     public UserService userService;
 
-    public List<Books> getAllBooks() {
-        return booksRepsitory.findAll();
+    public Page<Books> getAllBooks(int page, int size, String sortBy, String sortDir) {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return booksRepsitory.findAll(pageable);
     }
 
     public List<Books> getAllBooks1() {
@@ -29,7 +35,7 @@ public class BookEntryService {
     }
 
     public List<Books> searchBooksByAuthor(String author) {
-        List<Books> allBooks = getAllBooks(); // Assuming you have a method to get all books
+        List<Books> allBooks = getAllBooks1(); // Assuming you have a method to get all books
         return allBooks.stream()
                 .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
                 .collect(Collectors.toList());
@@ -85,7 +91,7 @@ public class BookEntryService {
     }
 
     public List<Books> searchBooksByRating(double rating, String condition) {
-        List<Books> allBooks = getAllBooks();
+        List<Books> allBooks = getAllBooks1();
         return allBooks.stream()
                 .filter(book -> {
                     if ("greater".equalsIgnoreCase(condition)) {

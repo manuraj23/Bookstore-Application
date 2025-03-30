@@ -26,7 +26,7 @@ public class AdminController {
     @GetMapping("getAllBooks")
     public ResponseEntity<?>getAllBoooks(){
         try {
-            List<Books>books=bookEntryService.getAllBooks();
+            List<Books>books=bookEntryService.getAllBooks1();
             if(!books.isEmpty()){
                 return new ResponseEntity<>(books, HttpStatus.OK);
             }
