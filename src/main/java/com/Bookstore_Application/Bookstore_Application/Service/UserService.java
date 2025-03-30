@@ -11,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class UserService {
@@ -29,7 +28,6 @@ public class UserService {
         user.setRoles(List.of("USER"));
         userRepository.save(user);
     }
-
 
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
