@@ -5,6 +5,8 @@ import com.Bookstore_Application.Bookstore_Application.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -16,10 +18,12 @@ public class UserController {
     private UserService userService;
 
 
-    @PutMapping("/UpdateUser/username/{username}")
-    public ResponseEntity<?>updateUser(@RequestBody User user, @PathVariable String username){
+    @PutMapping("/UpdateUser")
+    public ResponseEntity<?>updateUser(@RequestBody User user){
         try{
-            User userInDb =userService.findByUsername(username);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+            User userInDb =userService.findByEmail(email);
             if (userInDb != null) {
                 userInDb.setEmail(user.getEmail());
                 userInDb.setPassword(user.getPassword());
@@ -35,10 +39,12 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/DeleteUser/username/{username}")
-    public ResponseEntity<?>deleteUser(@PathVariable String username){
+    @DeleteMapping("/DeleteUser")
+    public ResponseEntity<?>deleteUser(){
         try{
-            User userInDb =userService.findByUsername(username);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+            User userInDb =userService.findByEmail(email);
             if (userInDb != null) {
                 userService.deleteUser(userInDb);
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
