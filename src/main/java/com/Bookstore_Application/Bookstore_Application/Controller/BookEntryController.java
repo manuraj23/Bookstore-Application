@@ -9,6 +9,8 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -27,24 +29,32 @@ public class BookEntryController {
 
     @GetMapping("/getAllBooks")
     public ResponseEntity<?>getAllBooks(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        System.out.println(email);
         List<Books>books=bookEntryService.getAllBooks();
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
-    @PostMapping("/createBook/username/{username}")
-    public ResponseEntity<?> createBook(@PathVariable String username, @RequestBody Books book) {
+    @PostMapping("/createBook")
+    public ResponseEntity<?> createBook(@RequestBody Books book) {
         try {
-            bookEntryService.createBook(username, book);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+            bookEntryService.createBook(email, book);
             return new ResponseEntity<>(book, HttpStatus.CREATED);
         }catch (Exception e){
             return new ResponseEntity<>(book, HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PutMapping("/updateBook/user/{username}/bookId/{bookId}")
-    public ResponseEntity<?> updateBook(@PathVariable String username, @PathVariable ObjectId bookId, @RequestBody Books newBook) {
+    @PutMapping("/updateBook/bookId/{bookId}")
+    public ResponseEntity<?> updateBook(@PathVariable ObjectId bookId, @RequestBody Books newBook) {
         try {
-            User user = userService.findByUsername(username);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+//            User user = userService.findByUsername(username);
+            User user = userService.findByEmail(email);
             List<Books> books = user.getBooks().stream().filter(x -> x.getId().equals(bookId)).toList();
             if (!books.isEmpty()) {
                 Optional<Books> oldBook = bookEntryService.getBookById(bookId);
@@ -56,7 +66,7 @@ public class BookEntryController {
                     old.setPrice(newBook.getPrice() != 0.0 ? newBook.getPrice() : old.getPrice());
                     old.setRating(newBook.getRating() != 0.0 ? newBook.getRating() : old.getRating());
                     old.setPublishedDate(newBook.getPublishedDate() != null && newBook.getPublishedDate().equals(new Date(0)) ? newBook.getPublishedDate() : old.getPublishedDate());
-                    bookEntryService.createBook(username, old);
+                    bookEntryService.createBook(email, old);
                     return new ResponseEntity<>(old, HttpStatus.OK);
                 }
             }
@@ -66,10 +76,12 @@ public class BookEntryController {
         }
     }
 
-    @DeleteMapping("/deleteBook/user/{username}/bookId/{bookId}")
-    public ResponseEntity<?>deleteBook(@PathVariable String username,@PathVariable ObjectId bookId){
+    @DeleteMapping("/deleteBook/bookId/{bookId}")
+    public ResponseEntity<?>deleteBook(@PathVariable ObjectId bookId){
         try {
-            boolean removed = bookEntryService.deleteBook(bookId, username);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+            boolean removed = bookEntryService.deleteBook(bookId, email);
             if (removed) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             } else {

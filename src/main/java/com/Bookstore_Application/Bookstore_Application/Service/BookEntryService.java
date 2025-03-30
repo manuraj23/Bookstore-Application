@@ -24,9 +24,10 @@ public class BookEntryService {
     }
 
     @Transactional
-    public void createBook(String username, Books book) {
+    public void createBook(String email, Books book) {
         try {
-            User user = userService.findByUsername(username);
+            User user= userService.findByEmail(email);
+//            User user = userService.findByUsername(username);
             Books saved = booksRepsitory.save(book);
             user.getBooks().add(saved);
             userService.saveUser(user);
@@ -40,10 +41,10 @@ public class BookEntryService {
     }
 
     @Transactional
-    public boolean deleteBook(ObjectId bookId, String username) {
+    public boolean deleteBook(ObjectId bookId, String email) {
         boolean removed = false;
         try {
-            User user = userService.findByUsername(username);
+            User user = userService.findByEmail(email);
             removed = user.getBooks().removeIf(x -> x.getId().equals(bookId));
             if (removed) {
                 userService.saveUser(user);
