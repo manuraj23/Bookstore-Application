@@ -48,6 +48,59 @@ public class BookEntryController {
         }
     }
 
+    @GetMapping("/searchByAuthor")
+    public ResponseEntity<?> searchBooksByAuthor(@RequestParam String author) {
+        try {
+            List<Books> books = bookEntryService.searchBooksByAuthor(author);
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/searchByTitle")
+    public ResponseEntity<?> searchBooksByTitle(@RequestParam String title) {
+        try {
+            List<Books> books = bookEntryService.searchBooksByTitle(title);
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/searchByCategory")
+    public ResponseEntity<?> searchBooksByCategory(@RequestParam String category) {
+        try {
+            List<Books> books = bookEntryService.searchBooksByCategory(category);
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/searchByRating")
+    public ResponseEntity<?> searchBooksByRating(@RequestParam double rating, @RequestParam String condition) {
+        try {
+            List<Books> books = bookEntryService.searchBooksByRating(rating, condition);
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+//    @GetMapping("/searchByRating")
+//    public ResponseEntity<?> searchBooksByRating(@RequestParam String ratingCondition) {
+//        try {
+//            String[] parts = ratingCondition.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
+//            double rating = Double.parseDouble(parts[1]);
+//            String condition = parts[0].equals(">=") ? "greater" : parts[0].equals("=") ? "equal" : "";
+//            List<Books> books = bookEntryService.searchBooksByRating(rating, condition);
+//            return new ResponseEntity<>(books, HttpStatus.OK);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//    }
+
+
     @PutMapping("/updateBook/bookId/{bookId}")
     public ResponseEntity<?> updateBook(@PathVariable ObjectId bookId, @RequestBody Books newBook) {
         try {

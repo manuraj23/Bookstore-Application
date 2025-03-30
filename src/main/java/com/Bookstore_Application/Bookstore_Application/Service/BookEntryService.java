@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class BookEntryService {
@@ -21,6 +22,17 @@ public class BookEntryService {
 
     public List<Books> getAllBooks() {
         return booksRepsitory.findAll();
+    }
+
+    public List<Books> getAllBooks1() {
+        return booksRepsitory.findAll();
+    }
+
+    public List<Books> searchBooksByAuthor(String author) {
+        List<Books> allBooks = getAllBooks(); // Assuming you have a method to get all books
+        return allBooks.stream()
+                .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -57,4 +69,32 @@ public class BookEntryService {
     }
 
 
+    public List<Books> searchBooksByTitle(String title) {
+        List<Books> allBooks = getAllBooks1();
+        return allBooks.stream()
+                .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Books> searchBooksByCategory(String category) {
+        List<Books> allBooks = getAllBooks1();
+        return allBooks.stream()
+                .filter(book -> book.getCategory() != null && book.getCategory().stream()
+                        .anyMatch(cat -> cat.equalsIgnoreCase(category)))
+                .collect(Collectors.toList());
+    }
+
+    public List<Books> searchBooksByRating(double rating, String condition) {
+        List<Books> allBooks = getAllBooks();
+        return allBooks.stream()
+                .filter(book -> {
+                    if ("greater".equalsIgnoreCase(condition)) {
+                        return book.getRating() > rating;
+                    } else if ("equal".equalsIgnoreCase(condition)) {
+                        return book.getRating() == rating;
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
+    }
 }
