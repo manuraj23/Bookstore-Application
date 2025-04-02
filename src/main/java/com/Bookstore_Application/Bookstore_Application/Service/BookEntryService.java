@@ -35,7 +35,7 @@ public class BookEntryService {
     }
 
     public List<Books> searchBooksByAuthor(String author) {
-        List<Books> allBooks = getAllBooks1(); // Assuming you have a method to get all books
+        List<Books> allBooks = getAllBooks1();
         return allBooks.stream()
                 .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
                 .collect(Collectors.toList());

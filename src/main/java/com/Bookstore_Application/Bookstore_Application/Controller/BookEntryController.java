@@ -71,7 +71,12 @@ public class BookEntryController {
     public ResponseEntity<?> searchBooksByAuthor(@RequestParam String author) {
         try {
             List<Books> books = bookEntryService.searchBooksByAuthor(author);
-            return new ResponseEntity<>(books, HttpStatus.OK);
+            if(books!=null && !books.isEmpty()){
+                return new ResponseEntity<>(books, HttpStatus.OK);
+            }
+            else{
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -81,7 +86,12 @@ public class BookEntryController {
     public ResponseEntity<?> searchBooksByTitle(@RequestParam String title) {
         try {
             List<Books> books = bookEntryService.searchBooksByTitle(title);
-            return new ResponseEntity<>(books, HttpStatus.OK);
+            if(books!=null && !books.isEmpty()){
+                return new ResponseEntity<>(books, HttpStatus.OK);
+            }
+            else{
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -91,7 +101,12 @@ public class BookEntryController {
     public ResponseEntity<?> searchBooksByCategory(@RequestParam String category) {
         try {
             List<Books> books = bookEntryService.searchBooksByCategory(category);
-            return new ResponseEntity<>(books, HttpStatus.OK);
+            if(books!=null && !books.isEmpty()){
+                return new ResponseEntity<>(books, HttpStatus.OK);
+            }
+            else{
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -101,7 +116,12 @@ public class BookEntryController {
     public ResponseEntity<?> searchBooksByRating(@RequestParam double rating, @RequestParam String condition) {
         try {
             List<Books> books = bookEntryService.searchBooksByRating(rating, condition);
-            return new ResponseEntity<>(books, HttpStatus.OK);
+            if(books!=null && !books.isEmpty()){
+                return new ResponseEntity<>(books, HttpStatus.OK);
+            }
+            else{
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
